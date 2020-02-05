@@ -5,7 +5,7 @@ const ffmpeg = require('fluent-ffmpeg')
 ffmpeg.setFfmpegPath(ffmpegPath)
 
 async function getOpeningURL(animeName){
-    const response = await fetch("https://openings.ninja/api/anime/" + animeName)
+    const response = await fetch("https://openings.ninja/api/anime/" + animeName).catch((e) => console.log(e))
     data = await response.json()
     links = []
     data.openings.forEach(element => {
@@ -21,6 +21,9 @@ async function getMP3(openingURL){
     try{
         await ffmpeg(openingURL)
             .output('./mp3/' + title + '.mp3')
+            .on('end', () => {
+                console.log(`downloaded ${title}`)
+            })
             .on('error', (err) => {
                 console.log(err)
             }).run()
